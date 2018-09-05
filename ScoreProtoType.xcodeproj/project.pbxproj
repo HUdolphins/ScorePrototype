@@ -15,6 +15,7 @@
 		8737B2DF2138D04A000A628B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8737B2DD2138D04A000A628B /* LaunchScreen.storyboard */; };
 		8737B2E72138D651000A628B /* InputViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737B2E62138D651000A628B /* InputViewController.swift */; };
 		8737B2F1213A528A000A628B /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737B2F0213A528A000A628B /* Player.swift */; };
+		8737B31F213FEBE3000A628B /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737B31E213FEBE3000A628B /* DataViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		8737B2E02138D04A000A628B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8737B2E62138D651000A628B /* InputViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputViewController.swift; sourceTree = "<group>"; };
 		8737B2F0213A528A000A628B /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		8737B31E213FEBE3000A628B /* DataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewController.swift; sourceTree = "<group>"; };
 		BDDCC2D1424FC4662597414A /* Pods-ScoreProtoType.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ScoreProtoType.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ScoreProtoType/Pods-ScoreProtoType.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -80,6 +82,7 @@
 				8737B2E62138D651000A628B /* InputViewController.swift */,
 				8737B2F0213A528A000A628B /* Player.swift */,
 				8737B2DB2138D04A000A628B /* Assets.xcassets */,
+				8737B31E213FEBE3000A628B /* DataViewController.swift */,
 				8737B2DD2138D04A000A628B /* LaunchScreen.storyboard */,
 				8737B2E02138D04A000A628B /* Info.plist */,
 			);
@@ -212,6 +215,7 @@
 			files = (
 				8737B2E72138D651000A628B /* InputViewController.swift in Sources */,
 				8737B2F1213A528A000A628B /* Player.swift in Sources */,
+				8737B31F213FEBE3000A628B /* DataViewController.swift in Sources */,
 				8737B2D72138D048000A628B /* ViewController.swift in Sources */,
 				8737B2D52138D048000A628B /* AppDelegate.swift in Sources */,
 			);
