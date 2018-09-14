@@ -9,38 +9,40 @@
 import Foundation
 
 
-class Plryer: NSObject {
+class Player: NSObject {
     var name:String
-    var position: Int
+    var position: Int = 0
     var base: Int = 0
-    var state: Int
-    var team: String
-    var battingAverage: Double
-    var RBI: Int  //打点
-    var hitCounts: Int
-    var singleHitCounts: Int
-    var twoBaseHitCounts: Int
-    var threeBaseHitCounts: Int
-    var HRCounts: Int
-    var baseHitCounts: Int
-    var fourBallCounts: Int
-    var deadBallCounts: Int
-    var struckOutCounts: Int
-    var stolenBasesCounts: Int
-    var caghtStealingCounts: Int
-    var BuntCounts: Int
-    var sacrificeFly: Int
-    var doublePlayCounts: Int
-    var basePercentage: Double
-    var sluggingPercentage: Double
-    var errorCounts: Int
-    var OPS: Double
-    var uniformNumber: Int
+    var state: Int = -1
+    var team: String?
+    var battingAverage: Double = 0
+    var bats: Int = 0
+    var RBI: Int = 0  //打点
+    var hitCounts: Int = 0
+    var singleHitCounts: Int = 0
+    var twoBaseHitCounts: Int = 0
+    var threeBaseHitCounts: Int = 0
+    var HRCounts: Int = 0
+    var baseHitCounts: Int = 0
+    var fourBallCounts: Int = 0
+    var deadBallCounts: Int = 0
+    var struckOutCounts: Int = 0
+    var stolenBasesCounts: Int = 0
+    var caghtStealingCounts: Int = 0
+    var BuntCounts: Int = 0
+    var sacrificeFly: Int = 0
+    var doublePlayCounts: Int = 0
+    var onBaseCounts: Int = 0
+    var basePercentage: Double = 0
+    var sluggingPercentage: Double = 0
+    var errorCounts: Int = 0
+    var OPS: Double = 0
+    var uniformNumber: Int?
     
     
     
-    init(_ name:String, _ position: Int) {
+    init(_ name:String ) {
         self.name = name
-        self.position = position
+        
     }
 }

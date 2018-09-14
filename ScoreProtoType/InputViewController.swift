@@ -7,12 +7,20 @@
 //
 
 import UIKit
+import Firebase
+import FirebaseDatabase
+
 
 class InputViewController: UIViewController {
+    
+    var playerArray: [FIRPlayer] = []
+    let playerRef = Database.database().reference()
+    
     
     var startPoint: CGPoint!
     var endPoint: CGPoint!
     
+    var battingOrder = 0
     var outCounts = 0
     var strikeCounts = 0
     var ballCounts = 0
@@ -21,10 +29,12 @@ class InputViewController: UIViewController {
     var secondRunnerExists = false
     var thirdRunnerExists = false
     
+    var runnerSituation: String = "走者なし"
     
     
     
-    let batter = Batter("ああ", 3)
+    
+    
     
 
     @IBOutlet weak var pitcherButton: UIButton!
@@ -39,172 +49,164 @@ class InputViewController: UIViewController {
     
     @IBOutlet weak var leftHitButton: UIButton!
     
-    @IBOutlet weak var resultLabel: UILabel!
+    
     @IBOutlet weak var strikeCountsLabel: UILabel!
     @IBOutlet weak var ballCountsLabel: UILabel!
     @IBOutlet weak var OutCountsLabel: UILabel!
     
     
-    @IBOutlet weak var firstImage: UIImageView!
-    @IBOutlet weak var secondImage: UIImageView!
-    @IBOutlet weak var thirdImage: UIImageView!
     
+    
+    @IBOutlet weak var thirdImageView: UIImageView!
+    
+    
+    @IBAction func thirdGestureRecognizer(_ sender: UIPanGestureRecognizer) {
+        thirdImageView.image = UIImage(named: "baseball copy 2.png")
+        let move:CGPoint = sender.translation(in: view)
+        
+        //ドラッグした部品の座標に移動量を加算する。
+        sender.view!.center.x += move.x
+        sender.view!.center.y += move.y
+        
+        //ラベルに現在座標を表示する。
+        //testLabel.text = "\(sender.view!.frame.origin.x), \(sender.view!.frame.origin.y)"
+        
+        //移動量を0にする。
+        sender.setTranslation(CGPoint.zero, in:view)
+    }
     
     
     
     @IBAction func pitcherFlyCatched(_ sender: Any) {
-        resultLabel.text = "ピッチャーフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
+        
         reloadSituation()
+        modalAppear(resultString: "ピッチャーフライ")
         
     }
     
     @IBAction func catcherFlyCatched(_ sender: Any) {
-        resultLabel.text = "キャッチャーフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
+        
+        playerArray[battingOrder].results.insert("捕飛", at: 0)
+        let results = ["results": playerArray[battingOrder].results]
+        playerRef.child("player").child(playerArray[battingOrder].id!).updateChildValues(results)
+        if battingOrder == 8{
+            battingOrder = 0
+        }else{
+        battingOrder += 1
         }
         reloadSituation()
+        
+        modalAppear(resultString: "キャッチャーフライ")
     }
         
     @IBAction func firstFlyCatched(_ sender: Any) {
-        resultLabel.text = "ファーストフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
+        
     }
     @IBAction func secondFlyCatched(_ sender: Any) {
-        resultLabel.text = "セカンドフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     @IBAction func thirdFlyCatched(_ sender: Any) {
-        resultLabel.text = "サードフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     @IBAction func shortFlyCatched(_ sender: Any) {
-        resultLabel.text = "ショートフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     @IBAction func LeftFlyCatched(_ sender: Any) {
-        resultLabel.text = "レフトフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     @IBAction func centerFlyCatched(_ sender: Any) {
-        resultLabel.text = "センターフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     @IBAction func rightFlyCatched(_ sender: Any) {
-        resultLabel.text = "ライトフライ"
+        
         flyCatched()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
         reloadSituation()
     }
     
     @IBAction func LeftSingleHit(_ sender: Any) {
-        resultLabel.text = "レフト前ヒット"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     
     }
     
     @IBAction func centerSingleHit(_ sender: Any) {
-        resultLabel.text = "センター前ヒット"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+       
     }
     
     @IBAction func rightSingleHit(_ sender: Any) {
-        resultLabel.text = "ライト前ヒット"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     }
     @IBAction func pitcherSingleHit(_ sender: Any) {
-        resultLabel.text = "ピッチャー前内野安打"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     }
     @IBAction func firstSingleHit(_ sender: Any) {
-        resultLabel.text = "ピッチャー前内野安打"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+       
     }
     @IBAction func secondSingleHit(_ sender: Any) {
-        resultLabel.text = "ピッチャー前内野安打"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     }
     @IBAction func thirdSingleHit(_ sender: Any) {
-        resultLabel.text = "ピッチャー前内野安打"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     }
     @IBAction func shortSingleHit(_ sender: Any) {
-        resultLabel.text = "ピッチャー前内野安打"
+        
         makeBaseHit()
         reloadSituation()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            self.resultLabel.text = ""
-        }
+        
     }
     
     
     @IBAction func ballPitched(_ sender: Any) {
         ballCounts += 1
         if ballCounts == 4{
-            resultLabel.text = "フォアボール"
+            
             makeBaseHit()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.resultLabel.text = ""
-            }
+            
         
         }
         reloadSituation()
@@ -213,11 +215,9 @@ class InputViewController: UIViewController {
     @IBAction func strikePitched(_ sender: Any) {
         strikeCounts += 1
         if strikeCounts == 3{
-            resultLabel.text = "見逃し三振"
+            
             batterOut()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.resultLabel.text = ""
-            }
+            
             
         }
         reloadSituation()
@@ -226,11 +226,9 @@ class InputViewController: UIViewController {
     @IBAction func swing(_ sender: Any) {
         strikeCounts += 1
         if strikeCounts == 3{
-            resultLabel.text = "空振り三振"
+            
             batterOut()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                self.resultLabel.text = ""
-            }
+            
         }
         reloadSituation()
     }
@@ -244,11 +242,27 @@ class InputViewController: UIViewController {
         reloadSituation()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        playerRef.child("player").observe(.childAdded, with: {(snapshot: DataSnapshot) in
+            let playerData = FIRPlayer(snapshot: snapshot)
+            self.playerArray.insert(playerData, at: 0)
+            print(self.playerArray[0].id!)
+        })
+        makePlayers()
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        leftHitButton.backgroundColor = UIColor.red
+        
         reloadSituation()
         // Do any additional setup after loading the view.
+        let backgroundImage = UIImageView(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: self.view.frame.size.height))
+        backgroundImage.image = UIImage(named: "iPhone 8 Copy 2.png")
+        backgroundImage.layer.zPosition = -1
+        self.view.addSubview(backgroundImage)
+        
         
     }
 
@@ -261,40 +275,59 @@ class InputViewController: UIViewController {
     @IBAction func pitcherPanGestureRecognizeer(_ sender: UIPanGestureRecognizer) {
         let state = sender.state
         let translation = sender.translation(in: view)
-        startPoint = sender.view!.center
+        
+        //let thrownBallView = UIImageView(frame: CGRect(x: sender.view!.center.x, y: sender.view!.center.y, width: 100, height: 100))
+        //thrownBallView.image = UIImage(named: "baseball copy 2.png")
+        //thrownBallView.layer.cornerRadius = thrownBallView.frame.size.width / 2
+        //thrownBallView.clipsToBounds = true
+        //self.view.addSubview(thrownBallView)
+        //startPoint = sender.view!.center
         print("state=\(state.rawValue) translation=\(translation)")
-        if state == .began {
-            print("startPoint=\(startPoint)")
-        }
-        sender.view!.center.x = startPoint.x + translation.x
-        sender.view!.center.y = startPoint.y + translation.y
-        if state == .ended {
-            endPoint = sender.view!.center
-            print("lastPoint=\(endPoint)")
+        //if state == .began {
+            //print("startPoint=\(startPoint)")
+        
+        //}
+        //thrownBallView.center.x = startPoint.x + translation.x
+        //thrownBallView.center.x = startPoint.x + translation.x
+        
+        sender.view!.center.x += translation.x
+        sender.view!.center.y += translation.y
+        //if state == .ended {
+            //endPoint = sender.view!.center
+            //print("lastPoint=\(endPoint)")
             
             
-            let firstRect: CGRect = firstImage.frame
-            if firstRect.contains(endPoint){
-                resultLabel.text = "ピッチャーゴロ"
-                goroOut()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    self.resultLabel.text = ""
-                }
-                reloadSituation()
-                sender.view?.center = startPoint
-            }else{
-                sender.view?.center = startPoint
-            }
+            //let firstRect: CGRect = firstImage.frame
+            //if firstRect.contains(endPoint){
+               // resultLabel.text = "ピッチャーゴロ"
+               // goroOut()
+               // DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                  //  self.resultLabel.text = ""
+               // }
+              //  reloadSituation()
+                //sender.view?.center = startPoint
+           // }else{
+             //   sender.view?.center = startPoint
+           // }
             
             
-        }
+       
         
     }
     
+    @IBAction func DemoButton(_ sender: Any) {
+        let demoViewController = self.storyboard?.instantiateViewController(withIdentifier: "Demo") as! DemoViewController
+        self.present(demoViewController, animated: true, completion: nil)
+    }
     
     
     func flyCatched(){
         batterOut()
+        if outCounts == 2{
+            iningChange()
+        }else{
+            outCounts += 1
+        }
         
         batterChange()
     }
@@ -357,20 +390,62 @@ class InputViewController: UIViewController {
         OutCountsLabel.text = "O \(outCounts)"
         
         if firstRunnerExists{
-            firstImage.image = UIImage(named: "IMG_0333")
+            
         }else{
-            firstImage.image = nil
+            
         }
         if secondRunnerExists{
-            secondImage.image = UIImage(named: "IMG_0333")
+            
         }else{
-            secondImage.image = nil
+            
         }
         if thirdRunnerExists{
-            thirdImage.image = UIImage(named: "IMG_0334")
+            
         }else{
-            thirdImage.image = nil
+            
         }
+        
+        if thirdRunnerExists && secondRunnerExists && firstRunnerExists{
+            runnerSituation = "満塁"
+        }else if !thirdRunnerExists && secondRunnerExists && firstRunnerExists{
+            runnerSituation = "1,2塁"
+        }else if thirdRunnerExists && !secondRunnerExists && firstRunnerExists {
+            runnerSituation = "1,3塁"
+        }else if thirdRunnerExists && secondRunnerExists && !firstRunnerExists{
+            runnerSituation = "2,3塁"
+        }else if thirdRunnerExists && !secondRunnerExists && !firstRunnerExists{
+            runnerSituation = "3塁"
+        }else if !thirdRunnerExists && secondRunnerExists && !firstRunnerExists{
+            runnerSituation = "2塁"
+        }else if !thirdRunnerExists && !secondRunnerExists && firstRunnerExists {
+            runnerSituation = "1塁"
+        }else{
+            runnerSituation = "走者なし"
+        }
+    }
+    
+    func makePlayers(){
+        
+        for i in 1...9{
+            let playerName = "player\(i)"
+            
+            let data = ["name": playerName]
+            playerRef.child("player").childByAutoId().setValue(data)
+            
+            
+        }
+        
+        
+    }
+    
+    func modalAppear(resultString: String){
+        let modalViewController = storyboard?.instantiateViewController(withIdentifier: "ModalViewController") as! ResultViewController
+        modalViewController.modalPresentationStyle = .custom
+        modalViewController.x = String(outCounts)
+        modalViewController.y = self.runnerSituation
+        modalViewController.z = resultString
+        modalViewController.transitioningDelegate = self
+        present(modalViewController, animated: true, completion: nil)
     }
     
     
@@ -379,3 +454,81 @@ class InputViewController: UIViewController {
 
     
 }
+
+extension InputViewController: UIViewControllerTransitioningDelegate {
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return CustomPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+}
+
+class CustomPresentationController: UIPresentationController {
+    // 呼び出し元のView Controller の上に重ねるオーバレイView
+    var overlayView = UIView()
+    
+    // 表示トランジション開始前に呼ばれる
+    override func presentationTransitionWillBegin() {
+        guard let containerView = containerView else {
+            return
+        }
+        overlayView.frame = containerView.bounds
+        overlayView.gestureRecognizers = [UITapGestureRecognizer(target: self, action: #selector(CustomPresentationController.overlayViewDidTouch(_:)))]
+        overlayView.backgroundColor = .black
+        overlayView.alpha = 0.0
+        containerView.insertSubview(overlayView, at: 0)
+        
+        // トランジションを実行
+        presentedViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] context in
+            self?.overlayView.alpha = 0.7
+            }, completion:nil)
+    }
+    
+    // 非表示トランジション開始前に呼ばれる
+    override func dismissalTransitionWillBegin() {
+        presentedViewController.transitionCoordinator?.animate(alongsideTransition: {[weak self] context in
+            self?.overlayView.alpha = 0.0
+            }, completion:nil)
+    }
+    
+    // 非表示トランジション開始後に呼ばれる
+    override func dismissalTransitionDidEnd(_ completed: Bool) {
+        if completed {
+            overlayView.removeFromSuperview()
+        }
+    }
+    
+    let margin = (x: CGFloat(30), y: CGFloat(220.0))
+    // 子のコンテナサイズを返す
+    override func size(forChildContentContainer container: UIContentContainer, withParentContainerSize parentSize: CGSize) -> CGSize {
+        return CGSize(width: parentSize.width - margin.x, height: parentSize.height - margin.y)
+    }
+    
+    // 呼び出し先のView Controllerのframeを返す
+    override var frameOfPresentedViewInContainerView: CGRect {
+        var presentedViewFrame = CGRect()
+        let containerBounds = containerView!.bounds
+        let childContentSize = size(forChildContentContainer: presentedViewController, withParentContainerSize: containerBounds.size)
+        presentedViewFrame.size = childContentSize
+        presentedViewFrame.origin.x = margin.x / 2.0
+        presentedViewFrame.origin.y = margin.y / 2.0
+        
+        return presentedViewFrame
+    }
+    
+    // レイアウト開始前に呼ばれる
+    override func containerViewWillLayoutSubviews() {
+        overlayView.frame = containerView!.bounds
+        presentedView?.frame = frameOfPresentedViewInContainerView
+        presentedView?.layer.cornerRadius = 10
+        presentedView?.clipsToBounds = true
+    }
+    
+    // レイアウト開始後に呼ばれる
+    override func containerViewDidLayoutSubviews() {
+    }
+    
+    // overlayViewをタップした時に呼ばれる
+    @objc func overlayViewDidTouch(_ sender: UITapGestureRecognizer) {
+        presentedViewController.dismiss(animated: true, completion: nil)
+    }
+}
+
